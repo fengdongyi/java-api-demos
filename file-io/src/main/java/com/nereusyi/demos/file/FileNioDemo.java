@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -180,11 +184,42 @@ public class FileNioDemo {
         long count2 = Files.walk(walkPath, FileVisitOption.FOLLOW_LINKS)
                 .filter(Files::isRegularFile).count();
         System.out.println(count2);
+
+        //
+//        Files.find()
     }
 
     public void fileAndPath(){
         Path path = new File(DEMO_PATH).toPath();
         File file = path.toFile();
+    }
+
+    public static void createAndWriteFile(){
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        byteBuffer.put("HelloWorld".getBytes(StandardCharsets.UTF_8));
+        try ( FileChannel fileChannel = FileChannel.open(Path.of("/tmp/test.txt"),
+                StandardOpenOption.CREATE,StandardOpenOption.WRITE) ){
+            byteBuffer.flip();
+            fileChannel.write(byteBuffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("write success.");
+    }
+
+    public static void readFile2(){
+        Charset utf8 = StandardCharsets.UTF_8;
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        try ( FileChannel fileChannel = FileChannel.open(Path.of("/tmp/test.txt"),
+                StandardOpenOption.READ) ){
+            fileChannel.read(byteBuffer);
+            byteBuffer.flip();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        CharBuffer charBuffer = utf8.decode(byteBuffer);
+        System.out.print("read result:");
+        System.out.println(new String(charBuffer.array()));
     }
 
 }
