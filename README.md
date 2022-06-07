@@ -6,3 +6,6 @@ file IO demo
 
 - jmh  
 jmh demo
+
+- methodHandle
+methodHandle demo
